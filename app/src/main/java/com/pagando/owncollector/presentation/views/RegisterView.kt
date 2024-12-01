@@ -46,16 +46,21 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.with
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RegisterView(navController: NavHostController, viewModel: RegisterViewModel) {
-    var name by remember { mutableStateOf("emilyspass") }
-    var username by remember { mutableStateOf("emilyspass@gmail.com") }
-    var password by remember { mutableStateOf("emilys") }
+    var name by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var isProcessing by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     val registrationStatus by viewModel.registrationStatus.collectAsState()
 
@@ -130,6 +135,15 @@ fun RegisterView(navController: NavHostController, viewModel: RegisterViewModel)
                         onValueChange = { password = it },
                         label = { Text(stringResource(R.string.LoginPassword)) },
                         placeholder = { Text(stringResource(R.string.LoginPasswordInstruction)) },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    painter = if (passwordVisible) painterResource(R.drawable.visibility) else painterResource(R.drawable.visibilityoff),
+                                    contentDescription = null
+                                )
+                            }
+                        }
                     )
 
                     Button(
@@ -146,7 +160,7 @@ fun RegisterView(navController: NavHostController, viewModel: RegisterViewModel)
                             targetState = isProcessing,
                             transitionSpec = {
                                 fadeIn() with fadeOut()
-                            }
+                            }, label = ""
                         ) { targetState ->
                             if (targetState) {
                                 CircularProgressIndicator(

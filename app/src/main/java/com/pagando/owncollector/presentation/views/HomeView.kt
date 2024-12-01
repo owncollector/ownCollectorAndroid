@@ -179,7 +179,7 @@ fun QrGetter(content: String, viewModel: HomeViewModel) {
 
     LaunchedEffect(content) {
         isLoading = true
-        delay(300) // Simular carga para que la animación se note
+        delay(300)
         qrBitmap = withContext(Dispatchers.IO) { viewModel.generateQRCode(content) }
         isLoading = false
     }
