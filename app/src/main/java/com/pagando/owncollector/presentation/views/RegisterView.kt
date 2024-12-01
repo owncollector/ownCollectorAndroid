@@ -41,31 +41,45 @@ import com.pagando.owncollector.navigation.Routes
 import com.pagando.owncollector.presentation.viewsModel.RegisterViewModel
 import com.pagando.owncollector.utils.ShowAlertDialog
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.with
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
+
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun RegisterView(navController: NavHostController, viewModel: RegisterViewModel ){
+fun RegisterView(navController: NavHostController, viewModel: RegisterViewModel) {
     var name by remember { mutableStateOf("emilyspass") }
     var username by remember { mutableStateOf("emilyspass@gmail.com") }
     var password by remember { mutableStateOf("emilys") }
+    var isProcessing by remember { mutableStateOf(false) }
 
     val registrationStatus by viewModel.registrationStatus.collectAsState()
-    if (registrationStatus == true){
 
-        ShowAlertDialog("Hubo un error al iniciar sesión", "Usuario o contraseña incorrectos")
+    if (registrationStatus == true) {
+        ShowAlertDialog("Registro Exitoso", "Usuario listo para iniciar sesión")
 
-        navController.popBackStack()
-
-
-
-    }else if (registrationStatus == false){
-        ShowAlertDialog("Hubo un error al registrar el usuario", "Verifica los datos y vuelve a intenar")
+        LaunchedEffect(Unit) {
+            delay(2000) // Retraso de 2 segundos
+            isProcessing = false
+            navController.popBackStack()
+        }
+    } else if (registrationStatus == false) {
+        isProcessing = false
+        ShowAlertDialog("Hubo un error al registrar el usuario", "Verifica los datos y vuelve a intentar")
     }
-    Scaffold(topBar = {
-       if (registrationStatus != null) {
 
-       }
-    }) { it
+    Scaffold(topBar = {}) { it ->
         Box(
-            contentAlignment = Alignment.Center, modifier = Modifier
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
                 .fillMaxSize()
                 .background(Color(198, 223, 168))
         ) {
@@ -110,8 +124,8 @@ fun RegisterView(navController: NavHostController, viewModel: RegisterViewModel 
                         value = username,
                         singleLine = true,
                         onValueChange = { username = it },
-                        label = { Text(stringResource(R.string.LoginPassword)) },
-                        placeholder = { Text(stringResource(R.string.LoginPasswordInstruction)) },
+                        label = { Text(stringResource(R.string.LoginUser)) },
+                        placeholder = { Text(stringResource(R.string.LoginUserInstruction)) },
                     )
 
                     OutlinedTextField(
@@ -121,16 +135,34 @@ fun RegisterView(navController: NavHostController, viewModel: RegisterViewModel 
                         label = { Text(stringResource(R.string.LoginPassword)) },
                         placeholder = { Text(stringResource(R.string.LoginPasswordInstruction)) },
                     )
+
                     Button(
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.width(271.dp),
-                        enabled = if (username.isNotEmpty() && name.isNotEmpty() && password.isNotEmpty()) true else false,
+                        enabled = username.isNotEmpty() && name.isNotEmpty() && password.isNotEmpty() && !isProcessing,
                         onClick = {
+                            isProcessing = true
                             viewModel.registerUser(name, username, password)
-                            //                      navController.navigate(Routes.HomeRoute.route)
                         },
                         colors = ButtonDefaults.buttonColors(Color(123, 168, 69)),
-                    ) { Text(stringResource(R.string.LoginButton)) }
+                    ) {
+                        AnimatedContent(
+                            targetState = isProcessing,
+                            transitionSpec = {
+                                fadeIn() with fadeOut()
+                            }
+                        ) { targetState ->
+                            if (targetState) {
+                                CircularProgressIndicator(
+                                    color = Color.White,
+                                    strokeWidth = 2.dp,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            } else {
+                                Text(stringResource(R.string.RegisterMe))
+                            }
+                        }
+                    }
                 }
                 Spacer(Modifier.height(20.dp))
                 TextButton(onClick = {
@@ -145,7 +177,6 @@ fun RegisterView(navController: NavHostController, viewModel: RegisterViewModel 
             }
         }
     }
-
 }
 
 @Preview

@@ -45,30 +45,55 @@ import com.pagando.owncollector.navigation.Routes
 import com.pagando.owncollector.presentation.viewsModel.LoginViewModel
 import com.pagando.owncollector.utils.ShowAlertDialog
 
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.unit.dp
+
 @Composable
 fun LoginView(navController: NavHostController, viewModelM: MainViewModel, viewModel: LoginViewModel) {
     var username by remember { mutableStateOf("hola1@gmail.com") }
     var password by remember { mutableStateOf("Hola123") }
     val loginStatus by viewModel.loginStatus.collectAsState()
     val userData by viewModel.userData.collectAsState()
+    var isLoading by remember { mutableStateOf(false) }
 
-    if (loginStatus == true){
-        viewModelM.id = userData!!.data.id.toString()
-        viewModelM.email = userData!!.data.email
-        viewModelM.nameUser = userData!!.data.name
-        navController.navigate(Routes.HomeRoute.route)
+    if (loginStatus == true) {
+        LaunchedEffect(Unit) {
+            viewModelM.id = userData!!.data.id.toString()
+            viewModelM.email = userData!!.data.email
+            viewModelM.nameUser = userData!!.data.name
+            navController.navigate(Routes.HomeRoute.route) {
+                popUpTo(Routes.LoginRoute.route) { inclusive = true }
+            }
 
-    }else if (loginStatus == false){
+        }
+    } else if (loginStatus == false) {
+        LaunchedEffect(Unit) {
+            isLoading = false
+        }
         ShowAlertDialog("Hubo un error al iniciar sesión", "Usuario o contraseña incorrectos")
+
     }
-    Scaffold (bottomBar ={
-        Column(Modifier.fillMaxWidth().background(Color(198, 223, 168))) {
-            Text(text = "Derechos reservados owncollector\n2024 ©", modifier = Modifier.align(Alignment.CenterHorizontally), textAlign = TextAlign.Center, color = Color(112,112,112))
+
+    Scaffold(bottomBar = {
+        Column(
+            Modifier.fillMaxWidth().background(Color(198, 223, 168))
+        ) {
+            Text(
+                text = "Derechos reservados owncollector\n2024 ©",
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                textAlign = TextAlign.Center,
+                color = Color(112, 112, 112)
+            )
             Spacer(Modifier.height(20.dp))
         }
-    } ){ it
+    }) { it ->
         Box(
-            contentAlignment = Alignment.Center, modifier = Modifier.padding(it).zIndex(0f)
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .padding(it)
+                .zIndex(0f)
                 .fillMaxSize()
                 .background(Color(198, 223, 168))
         ) {
@@ -115,16 +140,27 @@ fun LoginView(navController: NavHostController, viewModelM: MainViewModel, viewM
                         label = { Text(stringResource(R.string.LoginPassword)) },
                         placeholder = { Text(stringResource(R.string.LoginPasswordInstruction)) },
                     )
+
                     Button(
                         onClick = {
-                            Log.d("CLICKED", "Login")
+                            isLoading = true
                             viewModel.performLogin(username = username, password = password)
-//                            navController.navigate(Routes.HomeRoute.route)
                         },
                         colors = ButtonDefaults.buttonColors(Color(123, 168, 69)),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.width(271.dp),
-                    ) { Text(stringResource(R.string.LoginButton)) }
+                        enabled = !isLoading
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                strokeWidth = 2.dp,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        } else {
+                            Text(stringResource(R.string.LoginButton))
+                        }
+                    }
                 }
                 Spacer(Modifier.height(20.dp))
                 TextButton(onClick = {
@@ -140,6 +176,7 @@ fun LoginView(navController: NavHostController, viewModelM: MainViewModel, viewM
         }
     }
 }
+
 @Preview
 @Composable
 fun LoginViewPreview(){

@@ -125,8 +125,13 @@ fun HomeView(navController: NavController, viewModelM: MainViewModel) {
                     .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                if (!showQr) {
-                    Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(20.dp))
+
+                AnimatedVisibility(
+                    visible = !showQr,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
                     BigAmount("3.12", viewModel)
                 }
                 Text(
@@ -136,7 +141,7 @@ fun HomeView(navController: NavController, viewModelM: MainViewModel) {
                     color = Color(123, 168, 69)
                 )
                 for (i in 0 until 20) {
-                    ListItem("hierro", i.toString(), viewModel.formattedAmount(i.toString()))
+                    ListItem("Calcio", i.toString(), viewModel.formattedAmount(i.toString()))
                 }
             }
         }
