@@ -5,7 +5,6 @@ import androidx.compose.runtime.*
 
 @Composable
 fun ShowAlertDialog(title: String, message:String) {
-    // Estado para controlar la visibilidad del dialog
     var showDialog by remember { mutableStateOf(true) }
 
     if (showDialog) {
@@ -22,7 +21,6 @@ fun ShowAlertDialog(title: String, message:String) {
             confirmButton = {
                 TextButton(
                     onClick = {
-                        // Acción al confirmar
                         showDialog = false
                     }
                 ) {

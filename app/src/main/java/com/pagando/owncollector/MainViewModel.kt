@@ -11,21 +11,21 @@ import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
     var nameUser: String = ""
-        get() = field // Getter: Aquí puedes añadir lógica adicional si es necesario
+        get() = field
         set(value) {
-            field = value.trim() // Setter: Ejemplo de lógica personalizada, elimina espacios
+            field = value.trim()
         }
 
     var email: String = ""
         get() = field
         set(value) {
-            field = value.lowercase() // Convierte el email a minúsculas al asignar
+            field = value.lowercase()
         }
 
     var id: String = ""
         get() = field
         set(value) {
-            require(value.isNotBlank()) { "El ID no puede estar vacío" } // Valida que no sea vacío
+            require(value.isNotBlank()) { "El ID no puede estar vacío" }
             field = value
         }
 
