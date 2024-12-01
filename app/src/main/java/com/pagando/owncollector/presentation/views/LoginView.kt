@@ -45,8 +45,17 @@ import com.pagando.owncollector.presentation.viewsModel.LoginViewModel
 import com.pagando.owncollector.utils.ShowAlertDialog
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -56,6 +65,8 @@ fun LoginView(navController: NavHostController, viewModelM: MainViewModel, viewM
     val loginStatus by viewModel.loginStatus.collectAsState()
     val userData by viewModel.userData.collectAsState()
     var isLoading by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) }
+
 
     if (loginStatus == true) {
         LaunchedEffect(Unit) {
@@ -136,8 +147,17 @@ fun LoginView(navController: NavHostController, viewModelM: MainViewModel, viewM
                         value = password,
                         singleLine = true,
                         onValueChange = { password = it },
-                        label = { Text(stringResource(R.string.LoginPassword)) },
-                        placeholder = { Text(stringResource(R.string.LoginPasswordInstruction)) },
+                        label = { Text("Password") },
+                        placeholder = { Text("Enter your password") },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    painter = if (passwordVisible) painterResource(R.drawable.visibility) else painterResource(R.drawable.visibilityoff),
+                                    contentDescription = null
+                                )
+                            }
+                        }
                     )
 
                     Button(

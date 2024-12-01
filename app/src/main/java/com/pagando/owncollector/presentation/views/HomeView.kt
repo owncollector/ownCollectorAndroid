@@ -38,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,9 +71,13 @@ import kotlinx.coroutines.withContext
 @Composable
 fun HomeView(navController: NavController, viewModelM: MainViewModel) {
 
+
     val viewModel = HomeViewModel()
     val name = viewModelM.nameUser
     val mail = viewModelM.email
+    viewModel.getTrashData(viewModelM.id)
+    val userData by viewModel.amountData.collectAsState()
+
     var showQr by remember { mutableStateOf(false) }
     var isRefreshing by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullRefreshState(
@@ -143,7 +148,7 @@ fun HomeView(navController: NavController, viewModelM: MainViewModel) {
                     enter = fadeIn() + expandVertically(),
                     exit = fadeOut() + shrinkVertically()
                 ) {
-                    BigAmount("903.12", viewModel)
+                    BigAmount(userData?.total.toString(), viewModel)
                 }
                 Text(
                     stringResource(R.string.HomeHistory),
@@ -151,8 +156,11 @@ fun HomeView(navController: NavController, viewModelM: MainViewModel) {
                     fontSize = 18.sp,
                     color = Color(123, 168, 69)
                 )
-                for (i in 0 until 20) {
-                    ListItem("Calcio", i.toString(), viewModel.formattedAmount(i.toString()))
+                userData?.trash?.forEach { trashItem ->
+                    ListItem(
+                        type = trashItem.nombre,
+                        formattedAmount = viewModel.formattedAmount(trashItem.valor.toString())
+                    )
                 }
             }
         }
@@ -211,7 +219,7 @@ fun QrGetter(content: String, viewModel: HomeViewModel) {
 }
 
 @Composable
-fun ListItem(type: String, amount: String, formattedAmount: String) {
+fun ListItem(type: String, formattedAmount: String) {
     val fontColor = Color(80, 115, 37) // Verde del texto
     val backgroundColor = Color.White // Fondo blanco
 

@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.pagando.owncollector.data.models.LoginResponseModel
 import com.pagando.owncollector.data.models.RegisterResponseModel
+import com.pagando.owncollector.data.models.TrashResponse
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.FormBody
@@ -42,7 +43,7 @@ class ApiService(private val client: OkHttpClient) {
 
         client.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: Call, e: IOException) {
-                callback(null, e) // Pasar null para el modelo y el error como Throwable
+                callback(null, e)
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -66,6 +67,7 @@ class ApiService(private val client: OkHttpClient) {
             }
         })
     }
+
     fun register(
         name: String,
         email: String,
@@ -74,7 +76,6 @@ class ApiService(private val client: OkHttpClient) {
     ) {
         val url = Urls.BASE_URL + Urls.REGISTER_USER
 
-        // Crear el objeto JSON
         val json = """
         {
             "name": "$name",
@@ -83,22 +84,19 @@ class ApiService(private val client: OkHttpClient) {
         }
     """.trimIndent()
 
-        // Crear el cuerpo de la solicitud con el JSON
         val requestBody = RequestBody.create(
             "application/json; charset=utf-8".toMediaTypeOrNull(),
             json
         )
 
-        // Crear la solicitud
         val request = Request.Builder()
             .url(url)
             .post(requestBody)
             .build()
 
-        // Ejecutar la llamada
         client.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: Call, e: IOException) {
-                callback(null, e) // Pasar null para el modelo y el error como Throwable
+                callback(null, e)
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -108,9 +106,9 @@ class ApiService(private val client: OkHttpClient) {
                         if (responseBody != null) {
                             try {
                                 val parsedResponse = Gson().fromJson(responseBody, RegisterResponseModel::class.java)
-                                callback(parsedResponse, null) // Pasar el objeto y null para el error
+                                callback(parsedResponse, null)
                             } catch (e: JsonSyntaxException) {
-                                callback(null, e) // Pasar null para el modelo y el error
+                                callback(null, e)
                             }
                         } else {
                             callback(null, IOException("El cuerpo de la respuesta es nulo."))
@@ -125,35 +123,39 @@ class ApiService(private val client: OkHttpClient) {
 
 
 
-    fun getPoints(username: String, password: String, callback: (Result<String>) -> Unit) {
-        val url = Urls.BASE_URL + Urls.LOGIN
+    fun fetchTrashData(id: String, callback: (TrashResponse?, Throwable?) -> Unit) {
+        val url = Urls.BASE_URL + Urls.GET_POINTS_USER + id
 
         val request = Request.Builder()
             .url(url)
-            .post(
-                FormBody.Builder()
-                    .add("username", username)
-                    .add("password", password)
-                    .build()
-            )
+            .get()
             .build()
 
         client.newCall(request).enqueue(object : okhttp3.Callback {
-            override fun onFailure(call: okhttp3.Call, e: IOException) {
-                callback(Result.failure(e))
+            override fun onFailure(call: Call, e: IOException) {
+                callback(null, e)
             }
 
-            override fun onResponse(call: okhttp3.Call, response: Response) {
+            override fun onResponse(call: Call, response: Response) {
                 response.use {
                     if (response.isSuccessful) {
-                        val responseBody = response.body?.string() ?: ""
-                        Log.d("Register", "onResponse: $responseBody")
-                        callback(Result.success(responseBody))
+                        val responseBody = response.body?.string()
+                        if (responseBody != null) {
+                            try {
+                                val parsedResponse = Gson().fromJson(responseBody, TrashResponse::class.java)
+                                callback(parsedResponse, null)
+                            } catch (e: JsonSyntaxException) {
+                                callback(null, e)
+                            }
+                        } else {
+                            callback(null, IOException("El cuerpo de la respuesta es nulo."))
+                        }
                     } else {
-                        callback(Result.failure(IOException("Error HTTP ${response.code}: ${response.message}")))
+                        callback(null, IOException("Error HTTP ${response.code}: ${response.message}"))
                     }
                 }
             }
         })
     }
+
 }

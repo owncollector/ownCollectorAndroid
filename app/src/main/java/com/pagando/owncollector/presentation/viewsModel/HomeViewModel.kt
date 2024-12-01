@@ -6,9 +6,18 @@ import androidx.lifecycle.ViewModel
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.WriterException
 import com.google.zxing.qrcode.QRCodeWriter
+import com.pagando.owncollector.data.models.LoginResponseModel
+import com.pagando.owncollector.data.models.TrashResponse
+import com.pagando.owncollector.data.remote.api.ApiService
+import com.pagando.owncollector.data.remote.api.OkHttpClientSingleton
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.text.DecimalFormat
 
 class HomeViewModel : ViewModel(){
+    private val apiService = ApiService(OkHttpClientSingleton.provideClient())
+    private val _amountData = MutableStateFlow<TrashResponse?>(null)
+    val amountData: StateFlow<TrashResponse?> get() = _amountData
     fun generateQRCode(content: String, width: Int = 500, height: Int = 500): Bitmap? {
         val writer = QRCodeWriter()
         return try {
@@ -23,6 +32,18 @@ class HomeViewModel : ViewModel(){
         } catch (e: WriterException) {
             e.printStackTrace()
             null
+        }
+    }
+
+    fun getTrashData(id: String){
+        apiService.fetchTrashData(id) { response, error ->
+            if (error != null) {
+                println("Error: ${error.message}")
+            } else {
+                response?.let {
+                _amountData.value = it
+                }
+            }
         }
     }
 
