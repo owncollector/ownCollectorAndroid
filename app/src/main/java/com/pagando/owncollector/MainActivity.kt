@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.navigation.compose.rememberNavController
 import com.pagando.owncollector.navigation.AppNavigation
-import com.pagando.owncollector.presentation.views.HomeView
 import com.pagando.owncollector.ui.theme.OwnCollectorTheme
 
 class MainActivity : ComponentActivity() {

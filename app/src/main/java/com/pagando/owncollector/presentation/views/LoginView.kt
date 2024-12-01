@@ -45,18 +45,12 @@ import com.pagando.owncollector.presentation.viewsModel.LoginViewModel
 import com.pagando.owncollector.utils.ShowAlertDialog
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun LoginView(navController: NavHostController, viewModelM: MainViewModel, viewModel: LoginViewModel) {

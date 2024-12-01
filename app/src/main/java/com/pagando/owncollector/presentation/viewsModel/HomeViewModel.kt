@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.WriterException
 import com.google.zxing.qrcode.QRCodeWriter
-import com.pagando.owncollector.data.models.LoginResponseModel
 import com.pagando.owncollector.data.models.TrashResponse
 import com.pagando.owncollector.data.remote.api.ApiService
 import com.pagando.owncollector.data.remote.api.OkHttpClientSingleton

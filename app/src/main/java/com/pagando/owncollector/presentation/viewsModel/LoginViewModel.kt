@@ -1,10 +1,8 @@
 package com.pagando.owncollector.presentation.viewsModel
 
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pagando.owncollector.MainViewModel
 import com.pagando.owncollector.data.models.LoginResponseModel
 import com.pagando.owncollector.data.remote.api.ApiService
 import com.pagando.owncollector.data.remote.api.OkHttpClientSingleton
@@ -25,10 +23,7 @@ class LoginViewModel() : ViewModel() {
     fun performLogin(username: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             apiService.login(username = username, password = password){ loginResponse, error ->
-                Log.d("LOGIN_RESPONSE", loginResponse.toString())
-                Log.d("LOGIN_RESPONSE", error.toString())
                 if (error != null) {
-                    Log.d("LOGIN_RESPONSE", error.toString())
                     _loginStatus.value = false
                 } else if (loginResponse != null) {
                     _userData.value = loginResponse

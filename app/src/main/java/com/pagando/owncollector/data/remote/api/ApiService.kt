@@ -1,6 +1,5 @@
 package com.pagando.owncollector.data.remote.api
 
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.pagando.owncollector.data.models.LoginResponseModel
@@ -8,7 +7,6 @@ import com.pagando.owncollector.data.models.RegisterResponseModel
 import com.pagando.owncollector.data.models.TrashResponse
 import okhttp3.Call
 import okhttp3.OkHttpClient
-import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
 import okhttp3.RequestBody
