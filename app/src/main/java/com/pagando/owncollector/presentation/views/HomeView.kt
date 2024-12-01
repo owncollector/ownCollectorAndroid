@@ -5,6 +5,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,11 +21,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -31,6 +35,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +59,9 @@ import androidx.navigation.compose.rememberNavController
 import com.pagando.owncollector.MainViewModel
 import com.pagando.owncollector.R
 import com.pagando.owncollector.presentation.viewsModel.HomeViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterialApi::class)
 @Composable
@@ -154,19 +162,51 @@ fun HomeView(navController: NavController, viewModelM: MainViewModel) {
     }
 }
 @Composable
-fun QrGetter(content: String, viewModel: HomeViewModel){
-    val qrBitmap: Bitmap? = viewModel.generateQRCode(content)
+fun QrGetter(content: String, viewModel: HomeViewModel) {
+    var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
 
-    qrBitmap?.let {
-        Image(
-            modifier = Modifier.fillMaxWidth(0.8f).clip(RoundedCornerShape(20.dp)),
-            bitmap = it.asImageBitmap(),
-            contentDescription = "Código QR",
-            contentScale = ContentScale.FillWidth
-        )
+    LaunchedEffect(content) {
+        isLoading = true
+        delay(300) // Simular carga para que la animación se note
+        qrBitmap = withContext(Dispatchers.IO) { viewModel.generateQRCode(content) }
+        isLoading = false
+    }
 
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        AnimatedVisibility(
+            visible = isLoading,
+            enter = fadeIn() + scaleIn(initialScale = 0.8f),
+            exit = fadeOut() + scaleOut(targetScale = 0.8f)
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(250.dp),
+                color = Color(123, 168, 69),
+                strokeWidth = 4.dp
+            )
+        }
+
+        AnimatedVisibility(
+            visible = qrBitmap != null,
+            enter = fadeIn() + scaleIn(initialScale = 0.8f),
+            exit = fadeOut() + scaleOut(targetScale = 0.8f)
+        ) {
+            qrBitmap?.let {
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .clip(RoundedCornerShape(20.dp)),
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = "Código QR"
+                )
+            }
+        }
     }
 }
+
 @Composable
 fun ListItem(type: String, amount: String, formattedAmount: String) {
     val fontColor = Color(80, 115, 37) // Verde del texto
@@ -175,7 +215,6 @@ fun ListItem(type: String, amount: String, formattedAmount: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-
             .padding(8.dp)
             .shadow(
                 elevation = 4.dp,

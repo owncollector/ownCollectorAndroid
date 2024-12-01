@@ -37,10 +37,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pagando.owncollector.R
-import com.pagando.owncollector.navigation.Routes
 import com.pagando.owncollector.presentation.viewsModel.RegisterViewModel
 import com.pagando.owncollector.utils.ShowAlertDialog
-
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
@@ -49,8 +47,6 @@ import androidx.compose.animation.with
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalAnimationApi::class)
