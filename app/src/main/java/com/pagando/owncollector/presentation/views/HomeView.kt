@@ -99,7 +99,8 @@ fun HomeView(navController: NavController, viewModelM: MainViewModel) {
                 Column(
                     Modifier
                         .fillMaxWidth()
-                        .background(Color(198, 223, 168),
+                        .background(
+                            Color(198, 223, 168),
                             shape = RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 30.dp)
                         ),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -186,7 +187,9 @@ fun QrGetter(content: String, viewModel: HomeViewModel) {
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .fillMaxWidth()
     ) {
         AnimatedVisibility(
             visible = isLoading,
@@ -206,13 +209,20 @@ fun QrGetter(content: String, viewModel: HomeViewModel) {
             exit = fadeOut() + scaleOut(targetScale = 0.8f)
         ) {
             qrBitmap?.let {
-                Image(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .clip(RoundedCornerShape(20.dp)),
-                    bitmap = it.asImageBitmap(),
-                    contentDescription = "Código QR"
-                )
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color.White)
+                        .padding(10.dp)
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .clip(RoundedCornerShape(20.dp)),
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = "Código QR"
+                    )
+                }
             }
         }
     }
@@ -293,7 +303,8 @@ fun BigAmount(amount: String, viewModel: HomeViewModel) {
 @Composable
 fun ShowQRButton(text : Int , onClick: () -> Unit) {
     Box(
-        modifier = Modifier.fillMaxWidth(0.8f)
+        modifier = Modifier
+            .fillMaxWidth(0.8f)
             .background(
                 color = Color(0xFFF1FBEF),
                 shape = RoundedCornerShape(16.dp)

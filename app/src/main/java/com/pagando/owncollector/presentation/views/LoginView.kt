@@ -60,8 +60,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LoginView(navController: NavHostController, viewModelM: MainViewModel, viewModel: LoginViewModel) {
-    var username by remember { mutableStateOf("hola1@gmail.com") }
-    var password by remember { mutableStateOf("Hola123") }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     val loginStatus by viewModel.loginStatus.collectAsState()
     val userData by viewModel.userData.collectAsState()
     var isLoading by remember { mutableStateOf(false) }
