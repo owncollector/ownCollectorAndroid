@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,8 +19,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -38,18 +36,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.pagando.owncollector.MainViewModel
 import com.pagando.owncollector.R
 import com.pagando.owncollector.navigation.Routes
 import com.pagando.owncollector.presentation.viewsModel.LoginViewModel
+import com.pagando.owncollector.utils.ShowAlertDialog
 
 @Composable
-fun LoginView(navController: NavHostController) {
-    val viewModel =  LoginViewModel()
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun LoginView(navController: NavHostController, viewModelM: MainViewModel, viewModel: LoginViewModel) {
+    var username by remember { mutableStateOf("hola1@gmail.com") }
+    var password by remember { mutableStateOf("Hola123") }
+    val loginStatus by viewModel.loginStatus.collectAsState()
+    val userData by viewModel.userData.collectAsState()
 
+    if (loginStatus == true){
+        viewModelM.id = userData!!.data.id.toString()
+        viewModelM.email = userData!!.data.email
+        viewModelM.nameUser = userData!!.data.name
+        navController.navigate(Routes.HomeRoute.route)
+
+    }else if (loginStatus == false){
+        ShowAlertDialog("Hubo un error al iniciar sesión", "Usuario o contraseña incorrectos")
+    }
     Scaffold (bottomBar ={
         Column(Modifier.fillMaxWidth().background(Color(198, 223, 168))) {
             Text(text = "Derechos reservados owncollector\n2024 ©", modifier = Modifier.align(Alignment.CenterHorizontally), textAlign = TextAlign.Center, color = Color(112,112,112))
@@ -107,8 +118,8 @@ fun LoginView(navController: NavHostController) {
                     Button(
                         onClick = {
                             Log.d("CLICKED", "Login")
-//                        viewModel.performLogin(username = username, password = password)
-                            navController.navigate(Routes.HomeRoute.route)
+                            viewModel.performLogin(username = username, password = password)
+//                            navController.navigate(Routes.HomeRoute.route)
                         },
                         colors = ButtonDefaults.buttonColors(Color(123, 168, 69)),
                         shape = RoundedCornerShape(8.dp),
@@ -132,5 +143,5 @@ fun LoginView(navController: NavHostController) {
 @Preview
 @Composable
 fun LoginViewPreview(){
-    LoginView(navController = rememberNavController())
+    LoginView(navController = rememberNavController(), viewModel(), viewModel() )
 }

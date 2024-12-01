@@ -3,11 +3,11 @@
     <string name="app_name">OwnCollector</string>
     <string name="LoginTitle">Iniciar Sesión</string>
     <string name="LoginButton">Continuar</string>
-    <string name="LoginUser">Usuario</string>
-    <string name="LoginUserInstruction">Ingresa tu usuario</string>
+    <string name="LoginUser">Correo</string>
+    <string name="LoginUserInstruction">Ingresa tu Correo</string>
     <string name="LoginPassword">Contraseña</string>
     <string name="LoginPasswordInstruction">Ingresa tu contraseña</string>
-    <string name="LoginAccountDont">¿Ya tienes cuenta?</string>
+    <string name="LoginAccountDont">¿Ya tienes cuenta? Registrate!</string>
     <string name="RegisterMe">Registrarme</string>
     <string name="RegisterName">Nombre</string>
     <string name="RegisterNameInstruction">Ingresa tu nombre</string>

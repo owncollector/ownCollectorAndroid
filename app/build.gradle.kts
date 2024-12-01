@@ -77,5 +77,6 @@ dependencies {
 
 // Coil para manejo de imágenes
     implementation("io.coil-kt:coil-compose:1.4.0") // Compatible con SDK 30
+    implementation ("com.google.code.gson:gson:2.11.0")
 
 }

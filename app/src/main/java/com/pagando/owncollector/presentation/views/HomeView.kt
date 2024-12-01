@@ -43,17 +43,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.pagando.owncollector.MainViewModel
 import com.pagando.owncollector.R
 import com.pagando.owncollector.presentation.viewsModel.HomeViewModel
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun HomeView(navController: NavController) {
+fun HomeView(navController: NavController, viewModelM: MainViewModel) {
+
     val viewModel = HomeViewModel()
-    val name = "BRAIAN"
-    val mail = "bgapacheco"
+    val name = viewModelM.nameUser
+    val mail = viewModelM.email
     var showQr by remember { mutableStateOf(false) }
     var isRefreshing by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullRefreshState(
@@ -95,7 +98,7 @@ fun HomeView(navController: NavController) {
                     Text(text = mail, color = Color(112, 112, 112))
 
                     if (showQr) {
-                        QrGetter(name, viewModel)
+                        QrGetter(viewModelM.id, viewModel)
                     }
                     ShowQRButton(
                         text = if (!showQr) R.string.HomeViewShowQr else R.string.HomeViewHideQr,
@@ -235,5 +238,5 @@ fun ShowQRButton(text : Int , onClick: () -> Unit) {
 @Preview
 @Composable
 fun HomeViewPreview(){
-    HomeView(rememberNavController())
+    HomeView(rememberNavController(), viewModel())
 }
