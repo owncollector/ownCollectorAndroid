@@ -1,6 +1,11 @@
 package com.pagando.owncollector.presentation.views
 
 import android.graphics.Bitmap
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -97,7 +102,11 @@ fun HomeView(navController: NavController, viewModelM: MainViewModel) {
                     Text(text = name, color = Color(80, 115, 37), fontWeight = FontWeight.Bold)
                     Text(text = mail, color = Color(112, 112, 112))
 
-                    if (showQr) {
+                    AnimatedVisibility(
+                        visible = showQr,
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
                         QrGetter(viewModelM.id, viewModel)
                     }
                     ShowQRButton(
