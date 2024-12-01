@@ -2,6 +2,8 @@ package com.pagando.owncollector.presentation.views
 
 import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -50,6 +52,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -140,7 +143,7 @@ fun HomeView(navController: NavController, viewModelM: MainViewModel) {
                     enter = fadeIn() + expandVertically(),
                     exit = fadeOut() + shrinkVertically()
                 ) {
-                    BigAmount("3.12", viewModel)
+                    BigAmount("903.12", viewModel)
                 }
                 Text(
                     stringResource(R.string.HomeHistory),
@@ -246,21 +249,39 @@ fun ListItem(type: String, amount: String, formattedAmount: String) {
 }
 
 @Composable
-fun BigAmount(amount: String, viewModel: HomeViewModel){
-    val colorTitle =  Color(123, 168,69)
-    val colorOther = Color(80,  115, 37)
-    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text("Creditos", fontSize = 18.sp , color = colorTitle)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("mxn ", fontSize = 30.sp, color = colorOther, fontWeight = FontWeight.Bold)
-            Text("$ ${viewModel.formattedAmount(amount)}", fontSize = 75.sp, color = colorOther, fontWeight = FontWeight.Bold)
-        }
+fun BigAmount(amount: String, viewModel: HomeViewModel) {
+    val colorTitle = Color(123, 168, 69)
+    val colorOther = Color(80, 115, 37)
+
+    val targetAmount = amount.toFloatOrNull() ?: 0f
+    var animatedAmount by remember { mutableStateOf(0f) }
+
+    val displayedAmount by animateFloatAsState(
+        targetValue = animatedAmount,
+        animationSpec = tween(durationMillis = 1500)
+    )
+
+    LaunchedEffect(targetAmount) {
+        animatedAmount = targetAmount
     }
 
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Text("Creditos", fontSize = 18.sp, color = colorTitle, textAlign = TextAlign.Center)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("mxn ", fontSize = 30.sp, color = colorOther, fontWeight = FontWeight.Bold)
+            Text(
+                "$ ${viewModel.formattedAmount(String.format("%.2f", displayedAmount))}",
+                fontSize = 60.sp,
+                color = colorOther,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
 }
-
-
-
 @Composable
 fun ShowQRButton(text : Int , onClick: () -> Unit) {
     Box(
